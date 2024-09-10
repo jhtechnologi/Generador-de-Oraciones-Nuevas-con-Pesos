@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Oraciones con Pesos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generador de Oraciones Nuevas con Pesos</h1>
+        <p id="resultado"></p>
+        <button onclick="iniciarGeneracion()">Iniciar Generación Continua</button>
+    </div>
+
+    <script>
+        // Definir el diccionario con palabras completas
+        const diccionarioPalabras = [
+            'a', 'be', 'de', 'el', 'en', 'es', 'la', 'lo', 'me', 'mi', 
+            'no', 'te', 'un', 'yo', 'amor', 'vida', 'luz', 'sol', 'luna',
+            'paz', 'mar', 'hoja', 'flor', 'árbol', 'río', 'lago', 'piedra',
+            'cielo', 'viento', 'nube', 'ciudad', 'nieve', 'fuego', 'playa',
+            'bosque', 'desierto', 'arena', 'océano', 'valle', 'sendero', 'puente'
+        ];
+
+        // Definir el alfabeto y los pesos iniciales
+        let alfabeto = {
+            'a': 1.0, 'b': 0.9, 'c': 0.8, 'd': 0.7, 'e': 1.2, 'f': 0.6,
+            'g': 0.5, 'h': 0.4, 'i': 1.1, 'j': 0.3, 'k': 0.2, 'l': 0.9,
+            'm': 0.8, 'n': 0.7, 'ñ': 0.5, 'o': 1.0, 'p': 0.6, 'q': 0.4,
+            'r': 0.8, 's': 0.7, 't': 0.9, 'u': 1.0, 'v': 0.5, 'w': 0.3,
+            'x': 0.2, 'y': 0.6, 'z': 0.7
+        };
+
+        // Función para calcular el peso de una palabra
+        function calcularPesoPalabra(palabra) {
+            return palabra.split('').reduce((sum, letra) => sum + (alfabeto[letra] || 0), 0);
+        }
+
+        // Función para obtener los patrones de pesos de las palabras del diccionario
+        function obtenerPatronesDePesos() {
+            let patronesDePesos = [];
+            diccionarioPalabras.forEach(palabra => {
+                const peso = calcularPesoPalabra(palabra);
+                patronesDePesos.push({ palabra, peso });
+            });
+            return patronesDePesos;
+        }
+
+        // Extraer patrones de pesos del diccionario
+        const patronesDePesos = obtenerPatronesDePesos();
+
+        // Función para generar una nueva palabra basada en patrones de pesos
+        function generarPalabraNueva() {
+            let palabraNueva = '';
+            const tamano = Math.floor(Math.random() * (6 - 2 + 1)) + 2; // Tamaño aleatorio entre 2 y 6
+            while (palabraNueva.length < tamano) {
+                const patron = patronesDePesos[Math.floor(Math.random() * patronesDePesos.length)];
+                const fragmento = patron.palabra.slice(0, tamano - palabraNueva.length);
+                palabraNueva += fragmento;
+            }
+            palabraNueva = palabraNueva.slice(0, tamano); // Ajustar longitud final
+            return palabraNueva;
+        }
+
+        // Función para construir una oración completa
+        function construirOracion(tamanoPalabra = 5, palabrasPorOracion = 5) {
+            let oracion = '';
+            for (let i = 0; i < palabrasPorOracion; i++) {
+                const palabra = generarPalabraNueva();
+                oracion += palabra + ' ';
+            }
+            return oracion.trim() + '.';
+        }
+
+        // Función para generar dos oraciones completas y mostrarlas
+        function generarOraciones() {
+            const oracion1 = construirOracion();
+            const oracion2 = construirOracion();
+            document.getElementById('resultado').innerHTML = `<br>Oración 1: ${oracion1}<br>Oración 2: ${oracion2}`;
+        }
+
+        // Función para iniciar la generación continua
+        function iniciarGeneracion() {
+            setInterval(() => {
+                generarOraciones();
+            }, 5000); // Generar dos oraciones cada 5 segundos
+        }
+    </script>
+</body>
+</html>
